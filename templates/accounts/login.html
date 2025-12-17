@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    {% load static %}
+    <link href="{% static 'css/login.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sweetalert2.css' %}" rel="stylesheet">
+    <script src="{% static 'js/sweetalert2.js' %}"></script>
+</head>
+<body>
+{% csrf_token %}
+<div class="container">
+    <div class="content">
+        <form method="post" id="loginForm">
+            <div class="title">登录</div>
+            <div class="select_id">选择身份：</div>
+            <div class="selected">
+                <span>
+                    <input type="radio" class="admin" id="admin" name="role" value="admin">
+                    <label for="admin">管理员</label>
+                </span>
+                <span>
+                    <input type="radio" class="teacher" id="teacher" name="role" value="teacher">
+                    <label for="teacher">老师</label>
+                </span>
+                <span>
+                    <input type="radio" class="student" id="student" name="role" value="student">
+                    <label for="student">学生</label>
+                </span>
+            </div>
+            <div class="form">
+                <div class="your_username">你的账号：</div>
+                <div>
+                    <input type="text" class="username" id="username" name="username">
+                </div>
+                <div class="your_password">你的密码：</div>
+                <div>
+                    <input type="password" class="password" id="password" name="password">
+                </div>
+                <div class="remember_password_text">
+                    <input type="checkbox" class="remember_password" id="remember_password" name="remember_password" >
+                    <label for="remember_password">记住我的密码</label>
+                </div>
+                <button type="button" class="login" onclick="submitLogin()" data-url="{% url 'user_login' %}">登 录</button>
+                <input type="hidden" name="my_score" value="{% url 'my_score' %}">
+            </div>
+            <div class="forget_password"><a href="#">忘记密码</a></div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener("keydown",function(e){
+        if(e.keyCode == "13"){
+            e.preventDefault();
+            submitLogin();
+        }
+    });
+    const forget_password=document.querySelector(".forget_password");
+    forget_password.addEventListener("click",function(){
+        Swal.fire("question",`<h1 style="color:red;">忘记了？找管理员修改！</h1>`,"question");
+    });
+    const checkbox=document.querySelector("input[name='remember_password']");
+    checkbox.addEventListener("change",function(){
+        if(this.checked){
+            Swal.fire("question",`<h1 style="color:red;">选择了也没用，记不住，暂无此功能！</h1>`,"question");
+            this.checked=false;
+            return;
+        }
+        return;
+    });
+</script>
+<script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>

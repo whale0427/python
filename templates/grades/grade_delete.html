@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div class="outside form">
+        <form class="form" method="post">
+            {% csrf_token %}
+            <div class="form-title">确认删除？</div>
+            <div class="form-tip">
+                你确定要删除【{{grades.grade_name}}】吗？此操作不可撤销。
+            </div>
+            <div class="operate">
+                <input type="submit" value="删除" class="btn save">
+                <button type="button" class="btn back" onclick="go_back()">取消</button>
+            </div>
+        </form>
+        <script>
+            function go_back(){
+                history.back();
+            }
+        </script>
+    </div>
+</div>
+{% endblock %}

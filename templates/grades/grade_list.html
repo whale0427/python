@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load url_tag %}
+{{ data }}
+{% block content %}
+<div class="content">
+    <div class="outside">
+        <div class="inside">
+            <form method="get" action="{% url 'grade_list' %}">
+                <label for="id_grade_name">班级名称：</label>
+                <input id="id_grade_name" type="text" placeholder="搜索班级名称..." name="search" class="from search">
+                <button class="btn search">搜索</button>
+                <a href="{% url 'grade_create' %}">
+<!--                    必须设置type="button"，否则会默认为submit，导致无法跳转对应的路由，会跳转到action的路由-->
+                    <button type="button" class="btn add">新增</button>
+                </a>
+            </form>
+        </div>
+    </div>
+    <div class="outside">
+<!--        表格-->
+        <table class="table gradetable">
+            <thead>
+                <tr>
+                    <th>班级名称</th>
+                    <th>班级编号</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for grade in grades %}
+                <tr class="{% cycle 'row1' 'row2'%}">
+                    <td>{{grade.grade_name}}</td>
+                    <td>{{grade.grade_code}}</td>
+                    <td>
+                        <a href="{% url 'grade_update' grade.pk %}">
+                            <button class="btn editor">编辑</button>
+                        </a>
+                        <a href="{% url 'grade_delete' grade.pk %}">
+                            <button class="btn delete">删除</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+<!--        分页导航-->
+        <div class="page">
+            <div class="page-a">
+                {% if page_obj.has_previous %}
+                <a href="?{% search_url request page=1 %}">&laquo;首页</a>
+                <a href="?{% search_url request page=page_obj.previous_page_number %}">上一页</a>
+                {% endif %}
+                <span>{{page_obj.number}}/{{page_obj.paginator.num_pages}}</span>
+                {% if page_obj.has_next %}
+                <a href="?{% search_url request page=page_obj.next_page_number %}">下一页</a>
+                <a href="?{% search_url request page=page_obj.paginator.num_pages %}">尾页&raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

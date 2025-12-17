@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>校园管理系统</title>
+    {% load static %}
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/7.0.1/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sweetalert2.css' %}" rel="stylesheet">
+    <script src="{% static 'js/sweetalert2.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+<!--        侧边栏-->
+        <div class="sidebar">
+            <a href="{% url 'index' %}" id="title_list">
+                <div class="title">
+                    校园信息管理系统
+                </div>
+            </a>
+            <div class="role">
+                {% if request.session.user_role == "teacher" %}
+                老师
+                {% elif request.session.user_role == "student" %}
+                学生
+                {% else %}
+                管理员
+                {% endif %}
+            </div>
+            <div class="user_name">
+                欢迎用户：{{ request.session.user_name }}
+            </div>
+            <ul class="menu">
+                {% if request.session.user_role == "admin" %}
+                <li>
+                    <a href="{% url 'grade_list' %}" data-key="grade_list">
+                        <i class="fa-jelly-fill fa-regular fa-house"></i>班级管理
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'teacher_list' %}" data-key="teacher_list">
+                        <i class="fa-solid fa-chalkboard-user"></i>老师管理
+                    </a>
+                </li>
+                {% endif %}
+                {% if request.session.user_role == "admin" or request.session.user_role == "teacher" %}
+                <li>
+                    <a href="{% url 'student_list' %}" data-key="student_list">
+                        <i class="fa-solid fa-graduation-cap"></i>学生管理
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'score_list' %}" data-key="score_list">
+                        <i class="fa-solid fa-scroll"></i>成绩管理
+                    </a>
+                </li>
+                {% endif %}
+                {% if request.session.user_role == "student" %}
+                <li>
+                    <a href="{% url 'my_score' %}" data-key="my_score">
+                        <i class="fa-regular fa-window-restore"></i>我的成绩
+                    </a>
+                </li>
+                {% endif %}
+                <li>
+                    <a href="{% url 'change_password' %}" data-key="change_password">
+                        <i class="fa-solid fa-key"></i>修改密码
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'user_logout' %}" data-key="">
+                        <i class="fa-solid fa-right-from-bracket"></i>退出登录
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+<!--        主内容-->
+        <div class="content_parent">
+        {% block content %}
+        {% endblock %}
+        </div>
+
+
+    </div>
+</body>
+<script src="{% static 'js/base.js' %}" charset="UTF-8"></script>
+</html>

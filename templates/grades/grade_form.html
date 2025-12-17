@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div class="outside form">
+        <div class="form-title">
+<!--            当get请求,object是none,当post请求,object是对应的模型实例对象-->
+            {% if object %}
+                编辑班级
+            {% else %}
+                新增班级
+            {% endif %}
+        </div>
+        <form class="form" method="post">
+            {% csrf_token %}
+<!--            注：遍历的是GradesForm的fields属性，只有两个值，所以只会遍历两次，而不是遍历数据库表的数据-->
+            {% for field in form %}
+            <div class="form-content">
+                {{field.label_tag}}
+                {{field}}
+            </div>
+            <div class="errors">
+                {{field.errors}}
+            </div>
+            {% endfor %}
+            <div class="operate">
+                <input type="submit" value="保存" class="btn save">
+                {% if not object %}
+                    <input type="submit" name="save_next" value="保存并新增下一个" class="btn save">
+                {% endif %}
+                <button type="button" class="btn back" onclick="go_back()">返回</button>
+            </div>
+        </form>
+        <script>
+            function go_back(){
+                history.back();
+            }
+        </script>
+    </div>
+</div>
+{% endblock %}

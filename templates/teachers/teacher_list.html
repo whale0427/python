@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load url_tag %}
+{% block content %}
+{% load static %}
+<input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+<div class="content">
+    <div class="outside">
+        <div class="inside">
+            <form method="get" action="{% url 'teacher_list' %}">
+                {% csrf_token %}
+                <span class="form select">
+                    <label for="id_grade">班级：</label>
+                    <select id="id_grade" name="grade">
+                        <option value="">请选择班级</option>
+                        {% for grade in grades %}
+                        <option value="{{grade.pk}}" {% if grade.pk == current %} selected {% endif %}>{{grade.grade_name}}</option>
+                        {% endfor %}
+                    </select>
+                </span>
+                <span>
+                    <label for="id_name_number">姓名/电话：</label>
+                    <input id="id_name_number" type="text" placeholder="搜索姓名/电话..." name="search" class="from search">
+                    <button class="btn search" id="btn_search">搜索</button>
+                    <button type="button" class="btn add" id="btn_add" data-url="{% url 'teacher_create' %}">新增</button>
+                    <button type="button" class="btn batch_delete" id="btn_delete_all" data-url="{% url 'teacher_bulk_delete'%}">批量删除</button>
+                    <button type="button" class="btn import" id="btn_import" data-url="{% url 'teacher_import' %}">导入</button>
+                    <button type="button" class="btn export" id="btn_export" data-url="{% url 'teacher_export' %}">导出</button>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="outside">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select_all" class="form_checkbox"></th>
+                    <th>姓名</th>
+                    <th>班级</th>
+                    <th>电话</th>
+                    <th>性别</th>
+                    <th>生日</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                <tr class="{% cycle 'row1' 'row2'%}">
+                    <td><input type="checkbox" name="teacher_ids" class="form_checkbox"
+                               value="{{teacher.pk}}" data-teacher_name="{{teacher.teacher_name}}"></td>
+                    <td>{{teacher.teacher_name}}</td>
+                    <td>{{teacher.grade}}</td>
+                    <td>{{teacher.phone}}</td>
+                    <td>{{teacher.get_gender_display}}</td>
+                    <td>{{teacher.birthday}}</td>
+                    <td>
+                        <a href="{% url 'teacher_update' teacher.pk %}" id="btn_editor">
+                            <button class="btn editor">编辑</button>
+                        </a>
+                        <a href="{% url 'teacher_delete' teacher.pk %}" id="btn_delete">
+                            <button class="btn delete">删除</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+<!--        分页导航-->
+        <div class="page">
+            <div class="page-a">
+                {% if page_obj.has_previous %}
+                <a href="?{% search_url request page=1 %}">&laquo;首页</a>
+                <a href="?{% search_url request page=page_obj.previous_page_number %}">上一页</a>
+                {% endif %}
+                <span>{{page_obj.number}}/{{page_obj.paginator.num_pages}}</span>
+                {% if page_obj.has_next %}
+                <a href="?{% search_url request page=page_obj.next_page_number %}">下一页</a>
+                <a href="?{% search_url request page=page_obj.paginator.num_pages %}">尾页&raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/teachers.js' %}" charset="UTF-8"></script>
+{% endblock %}

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sweetalert2.css' %}" rel="stylesheet">
+    <script src="{% static 'js/sweetalert2.js' %}"></script>
+</head>
+<body>
+<div class="content">
+    <div class="outside form" style="width:100%">
+        <div class="form-title">
+<!--            当get请求,object是none,当post请求,object是对应的模型实例对象-->
+            {% if object %}
+                编辑学生信息
+            {% else %}
+                添加学生信息
+            {% endif %}
+        </div>
+        <form class="form" method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-content">
+                {{field.label_tag}}
+                {{field}}
+                <span class="tip">{{field.help_text}}</span>
+            </div>
+            <div class="errors">
+                {{field.errors}}
+            </div>
+            {% endfor %}
+            <div class="operate">
+<!--                <input type="submit" value="保存" class="btn save">-->
+                <button type="submit" class="btn save">保存</button>
+                {% if not object %}
+                <button type="submit" class="btn save" onclick="save_next()">保存并新增下一个</button>
+                {% endif %}
+<!--                回退到父页面，关闭Swal-->
+                <button type="button" class="btn back" onclick="window.parent.Swal.close();window.parent.location.reload()">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if students.pk %}
+<script>
+    var studenturl="{% url 'student_update' students.pk %}"
+</script>
+{% else %}
+<script>
+    var studenturl="{% url 'student_create' %}"
+</script>
+{% endif %}
+<script>
+var savenext=null
+function save_next(){
+    savenext=1
+}
+
+document.addEventListener("DOMContentLoaded",function(){
+    const form=document.querySelector("form");
+    form.addEventListener("submit",function(e){
+        e.preventDefault();//阻止表单默认提交，也就是阻止页面刷新
+        let formData=new FormData(form);
+        console.log(studenturl);
+        //异步请求
+        fetch(studenturl,{
+            method:"POST",
+            body:formData,
+            headers:{
+                "X-Requested-With":"XMLHttpRequest",
+                "X-CSRFToken":formData.get("csrfmiddlewaretoken"),
+            },
+        }).then(response=>response.json())
+        .then(data=>{
+            if(data.status=="success"){
+                Swal.fire({
+                    icon:"success",
+                    title:data.message,
+                    text:"数据提交成功",
+                }).then(result=>{
+                    if(result.isConfirmed){
+                        console.log(save_next)
+                        if(savenext!=null){
+                            window.location.reload()
+                        }else{
+                            //回到父页面，刷新
+                            window.parent.location.reload()
+                        }
+                    }
+                })
+            }else{
+                //将原数据流转换为可调用的JavaScript对象
+                const errors=JSON.parse(data.message);
+                //创建存储错误信息
+                let errorsmessage="";
+                for(const field in errors){
+                    //判断field是否是errors自身的属性，而不是父类属性
+                    if(errors.hasOwnProperty(field)){
+                        //遍历数组，并将遍历的结果存到error参数，=>代表左边的参数由右边的函数来处理
+                        //因为每个字段的数组只有一个元素，所有回调函数只会各执行一次
+                        //比如：error={ message: "姓名长度不符合规范（2-50）", code: "" }
+                        errors[field].forEach(error=>{
+                            errorsmessage+=`<li style="color:red;text-align:left;margin-left:20px;">${error.message}</li>`
+                        })
+                    }
+                };
+                Swal.fire({
+                    icon:"error",
+                    title:"提交错误",
+                    html:errorsmessage,
+                    confirmButtonText:"关闭",
+                });
+            }
+        }).catch(error=>{
+            Swal.fire({
+                icon:"error",
+                title:"网络请求错误",
+                text:"无法连接到服务器，请稍后再试",
+                confirmButtonText:"关闭",
+            })
+        })
+    })
+})
+</script>
+</body>
+</html>

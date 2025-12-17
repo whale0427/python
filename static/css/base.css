@@ -1,0 +1,355 @@
+/*全局标签样式*/
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft Yahei",sans-serif;
+}
+/*页面基础样式*/
+body{
+    background-color:white;
+    color:black;
+}
+/*主页面布局*/
+.container{
+    display:flex;
+    min-height:100vh;
+}
+/*侧边栏样式*/
+.sidebar{
+    width:250px;
+    background:#9DA3B8;
+    color:black;
+    padding:20px 0;
+    border-right:6px solid #E5E4E4;
+    /* 固定侧边栏宽度，不随窗口变化 */
+    flex-shrink: 0;
+}
+.sidebar a{
+    text-decoration:none;
+}
+.title{
+    text-align:center;
+    font-size:25px;
+    color:white;
+    font-weight:bold;
+    padding:20px;
+    border-bottom:1px solid white;
+    margin-bottom:25px;
+}
+.role,.user_name{
+    display:block;
+    margin:10px 0;
+    color:#363636;
+    transition:background 0.3s;
+    text-align:center;
+    font-weight:bold;
+}
+.user_name{
+    margin-bottom:15px;
+}
+.menu{
+    list-style:none;
+}
+.menu li{
+    margin-bottom:5px;
+}
+.menu a{
+    display:block;
+    padding:12px 20px;
+    color:#616161;
+    text-decoration:none;
+    transition:background 0.3s;
+    text-align:center;
+    font-weight:bold;
+}
+.menu a:hover, .menu a.active {
+    background:#979CA7;
+    color:white;
+}
+/*主内容样式*/
+.content_parent{
+    flex:1;
+    /* 设置内容区域的最小宽度，防止被挤压（可根据需求调整数值） */
+    min-width: 1200px;
+    /* 内容横向溢出时，横向滚动 */
+    overflow-x: auto;
+}
+.content{
+    /*这是简写属性，包含flex-grow,flex-shrink,flex-basis,分别是1，1，0%
+    flex-grow: 1：当父容器有剩余空间时，该元素会按比例（这里是 1:1，如果有多个子元素都设flex:1，则平分剩余空间）占据剩余空间。
+    flex-shrink: 1：当父容器空间不足时，该元素会按比例被压缩，避免溢出。
+    flex-basis: 0%：元素的初始尺寸以0%为基准，不再参考自身的width/height，而是完全由flex-grow和flex-shrink决定尺寸。*/
+    flex:1;
+    padding:20px;
+}
+.content a{
+    text-decoration:none;
+    color:black;
+}
+.content a:hover{
+    list-style:none;
+    color:blue;
+}
+/*内容头*/
+.content .outside{
+    display:block;
+    margin:20px auto;
+    padding:15px;
+    box-shadow:0 0 5px 4px #F8F8F8;
+    border-radius:5px;
+}
+.content .inside{
+    display:block;
+    padding:20px;
+    border:1px solid #F8F8F8;
+    border-radius:5px;
+}
+.content .form{
+    margin:10px auto;
+    padding:0 auto;
+    text-align:center;
+}
+.content input{
+    border-radius:5px;
+    margin-right:10px;
+    padding:3px 0;
+    border:2px solid #F8F8F8;
+    outline:none;
+}
+.content input:focus{
+    border-color:#AED0FD;
+    box-shadow:0 0 5px 2px #AED0FD;
+}
+.content .btn{
+    border:0px;
+    border-radius:5px;
+    margin-right:20px;
+    padding:3px 10px;
+    outline:none;
+    color:white;
+}
+.content .btn:hover{
+    box-shadow:0 0 5px 2px #AED0FD;
+}
+.from.search{
+    width:200px;
+}
+.btn.search{
+    background:#3D7CEF;
+    position:relative;
+}
+.btn.search::after{
+    content:"";
+    position:absolute;
+    right:-10px;
+    top:15%;
+    height:70%;
+    width:2px;
+    background:#dee2e6;
+}
+.btn.add{
+    background:#A778EC;
+}
+/*内容表格*/
+.table{
+    width:100%;
+    border-collapse:collapse;
+}
+.table th,.table td{
+    text-align:center;
+    padding:15px 0;
+}
+.table th{
+    background:#FCFCFC;
+    position:relative;
+}
+.table th:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    right:0;
+    top:30%;
+    height:40%;
+    width:1px;
+    background:#dee2e6;
+}
+.table.gradetable th:nth-child(1),.table.gradetable td:nth-child(1){
+    width:200px;
+}
+.table.gradetable th:nth-child(2),.table.gradetable td:nth-child(2){
+    width:200px;
+}
+.table.gradetable th:nth-child(3),.table.gradetable td:nth-child(3){
+    width:calc(100vh - 400px);
+}
+.table.gradetable td:nth-child(3){
+    text-align:left;
+    padding-left:50px;
+}
+.btn.editor{
+    background:#A977EE;
+}
+.btn.delete,.btn.batch_delete{
+    background:#E23832;
+}
+.table .row2{
+    background:#EFEFEF;
+}
+.table tr:hover{
+    background:#9DA3B8;
+}
+/*分页导航*/
+.page{
+    display:block;
+    padding:15px 0px;
+}
+.page .page-a{
+    font-size:15px;
+    text-align:center;
+    color:black;
+}
+.page .page-a:hover,.page .page-a:active {
+    color:black;
+}
+/*新增、编辑表单*/
+.content .outside.form{
+    width:500px;
+}
+.form .form-title{
+    font-size:30px;
+    text-align:center;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+.form .form-tip{
+    text-align:center;
+    margin:15px 0;
+}
+.form .form-content{
+    display:flex;
+    margin-top:20px;
+    width:100%;
+}
+.form-content label{
+    width:100px;
+}
+.form-content input{
+    flex:1;
+}
+.form .errors{
+    font-size:10px;
+    color:red;
+    margin-top:5px;
+}
+.form .operate{
+    display:block;
+    text-align:center;
+    margin-top:15px;
+}
+.content ul{
+    list-style:none;
+}
+.btn.save{
+    background:red;
+}
+.btn.back{
+    background:green;
+}
+/*学生样式*/
+.form.select{
+    margin-right:50px;
+}
+.form select{
+    width:200px;
+    border:none;
+    background:#E6E6EA;
+    border:2px solid #F8F8F8;
+    outline:none;
+    border-radius:5px;
+    height:30px;
+}
+.form select:focus{
+    border-color:#AED0FD;
+    box-shadow:0 0 5px 2px #AED0FD;
+}
+.btn.delete,.btn.batch_delete{
+    background:red;
+}
+.btn.import{
+    background:green;
+}
+.btn.export{
+    background:orange;
+}
+/*学生表单样式*/
+.form .tip{
+    font-size:12px;
+    display:flex;
+    align-items:center;
+}
+.btn.add_score{
+    background:#00CFCF;
+}
+/*成绩表单样式*/
+.btn.look{
+    background:#00CFCF;
+}
+/*修改密码样式*/
+.container_password{
+    flex:1;
+    /* 设置内容区域的最小宽度，防止被挤压（可根据需求调整数值） */
+    min-width: 1200px;
+    /* 内容横向溢出时，横向滚动 */
+    overflow-x: auto;
+    height:100%;
+    background-color:#F0F0F0;
+    color:black;
+}
+.content_password{
+    display:block;
+    background:white;
+    width:330px;
+    height:400px;
+    margin-top:200px;
+    margin-left:100px;
+    padding:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px 2px #9DA3B8;
+}
+.content_password .tips{
+    display:block;
+    width:100%;
+    font-size:25px;
+    font-weight:bold;
+    margin-top:10px;
+}
+.content_password .password{
+    display:block;
+    width:100%;
+    color:#3E4043;
+    font-size:14px;
+    margin-top:20px;
+}
+.content_password input{
+    display:block;
+    width:100%;
+    height:30px;
+    border:1px solid #80878F;
+    margin:5px 0;
+    border-radius:5px;
+    outline:none;
+}
+.content_password input:hover{
+    box-shadow:0 0 5px 2px #9DA3B8;
+}
+.content_password .change_password{
+    border:0px;
+    border-radius:5px;
+    outline:none;
+    width:100%;
+    height:40px;
+    background:black;
+    color:white;
+    font-size:18px;
+    margin-top:40px;
+}

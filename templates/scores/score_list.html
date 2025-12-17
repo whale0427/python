@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load url_tag %}
+{% block content %}
+{% load static %}
+<div class="content">
+    <div class="outside">
+        <div class="inside">
+            <form method="get" action="{% url 'score_list' %}">
+                {% csrf_token %}
+                <span class="form select">
+                    <label for="id_grade">班级：</label>
+                    <select id="id_grade" name="grade">
+                        <option value="">请选择班级</option>
+                        {% for grade in grades %}
+                        <option value="{{grade.pk}}" {% if grade.pk == current %} selected {% endif %}>
+                            {{grade.grade_name}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </span>
+                <span>
+                    <label for="id_name_number">姓名/学号：</label>
+                    <input id="id_name_number" type="text" placeholder="搜索姓名/学号..." name="search" class="from search">
+                    <button class="btn search" id="btn_search">搜索</button>
+                    <button type="button" class="btn add" id="btn_add" data-url="{% url 'score_create' %}">新增</button>
+                    <button type="button" class="btn batch_delete" id="btn_delete_all" data-url="{% url 'score_bulk_delete' %}">批量删除</button>
+                    <button type="button" class="btn import" id="btn_import" data-url="{% url 'score_import' %}">导入</button>
+                    <button type="button" class="btn export" id="btn_export" data-url="{% url 'score_export' %}">导出</button>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="outside">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select_all" class="form_checkbox"></th>
+                    <th>考试名称</th>
+                    <th>学生姓名</th>
+                    <th>学号</th>
+                    <th>语文</th>
+                    <th>数学</th>
+                    <th>英语</th>
+                    <th>班级</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for score in scores%}
+                <tr class="{% cycle 'row1' 'row2'%}">
+                    <td><input type="checkbox" name="score_ids" class="form_checkbox"
+                               value="{{score.pk}}" data-score_student_name="{{score.student_name}}"></td>
+                    <td>{{score.title}}</td>
+                    <td>{{score.student_name}}</td>
+                    <td>{{score.student_number}}</td>
+                    <td>{{score.chinese_score}}</td>
+                    <td>{{score.math_score}}</td>
+                    <td>{{score.english_score}}</td>
+                    <td>{{score.grade.grade_name}}</td>
+                    <td>
+                        <button id="btn_look" class="btn look" data-url="{% url 'score_look' score.pk %}">查看</button>
+                        <button id="btn_editor" class="btn editor" data-url="{% url 'score_update' score.pk %}">编辑</button>
+                        <button id="btn_delete" class="btn delete" data-url="{% url 'score_delete' score.pk %}">删除</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+<!--        分页导航-->
+        <div class="page">
+            <div class="page-a">
+                {% if page_obj.has_previous %}
+                <a href="?{% search_url request page=1 %}">&laquo;首页</a>
+                <a href="?{% search_url request page=page_obj.previous_page_number%}">上一页</a>
+                {% endif %}
+                <span>{{page_obj.number}}/{{page_obj.paginator.num_pages}}</span>
+                {% if page_obj.has_next %}
+                <a href="?{% search_url request page=page_obj.next_page_number %}">下一页</a>
+                <a href="?{% search_url request page=page_obj.paginator.num_pages%}">尾页&raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/scores.js' %}" charset="UTF-8"></script>
+{% endblock %}

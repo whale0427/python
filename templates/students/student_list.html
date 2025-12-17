@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% load url_tag %}
+{% block content %}
+<div class="content">
+    <div class="outside">
+        <div class="inside">
+<!--            在表单提交时，带有name属性的表单元素，其值会被自动拼接成 GET/POST 请求的参数，随请求一起发送-->
+            <form method="get" action="{% url 'student_list' %}">
+                <span class="form select">
+                    <label for="id_grade">班级：</label>
+                    <select id="id_grade" name="grade">
+                        <option value="">请选择班级</option>
+                        {% for grade in grades %}
+                        <option value="{{grade.pk}}" {% if grade.pk == current %} selected {% endif %} >{{grade.grade_name}}</option>
+                        {% endfor %}
+                    </select>
+                </span>
+                <span>
+                    <label for="id_name_number">姓名/学号：</label>
+                    <input id="id_name_number" type="text" placeholder="搜索姓名/学号..." name="search" class="from search">
+                    <button class="btn search" id="btn_search">搜索</button>
+    <!--                    必须设置type="button"，否则会默认为submit，导致无法跳转对应的路由，会跳转到action的路由-->
+                    <button type="button" class="btn add" id="btn_add">新增</button>
+                    <button type="button" class="btn batch_delete" id="btn_delete_all">批量删除</button>
+                    <button type="button" class="btn import" id="btn_import">导入</button>
+                    <button type="button" class="btn export" id="btn_export">导出</button>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="outside">
+<!--        表格-->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select_all" class="form_checkbox"></th>
+                    <th>姓名</th>
+                    <th>班级</th>
+                    <th>学号</th>
+                    <th>性别</th>
+                    <th>生日</th>
+                    <th>电话</th>
+                    <th>最新成绩</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr class="{% cycle 'row1' 'row2'%}">
+                    <td><input type="checkbox" name="student_ids" class="form_checkbox" value="{{student.pk}}"></td>
+                    <td>{{student.student_name}}</td>
+                    <td>{{student.grade.grade_name}}</td>
+                    <td>{{student.student_number}}</td>
+<!--                    获取中文男而不是M-->
+                    <td>{{student.get_gender_display}}</td>
+                    <td>{{student.birthday}}</td>
+                    <td>{{student.phone}}</td>
+                    <td>{% if student.scores.first.title %}(已出){% endif %}
+                        {{student.scores.first.title}}
+                    </td>
+                    <td>
+                        <button id="btn_add_score" class="btn add_score" data-url="{% url 'student_score_create' student.pk %}">新增成绩</button>
+                        <a href="{% url 'student_update' student.pk %}" class="editor">
+                            <button class="btn editor">编辑</button>
+                        </a>
+                        <a href="{% url 'student_delete' student.pk %}" class="delete">
+                            <button class="btn delete">删除</button>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+<!--        分页导航-->
+        <div class="page">
+            <div class="page-a">
+                {% if page_obj.has_previous %}
+                <a href="?{% search_url request page=1 %}">&laquo;首页</a>
+                <a href="?{% search_url request page=page_obj.previous_page_number %}">上一页</a>
+                {% endif %}
+                <span>{{page_obj.number}}/{{page_obj.paginator.num_pages}}</span>
+                {% if page_obj.has_next %}
+                <a href="?{% search_url request page=page_obj.next_page_number %}">下一页</a>
+                <a href="?{% search_url request page=page_obj.paginator.num_pages %}">尾页&raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //批量勾选
+    document.addEventListener("DOMContentLoaded",function(){
+        const checkall=document.getElementById("select_all")
+        checkall.addEventListener("click",function(){
+            document.querySelectorAll(".form_checkbox").forEach(check=>{
+                check.checked=checkall.checked
+            })
+        })
+    });
+    //成绩新增
+    const btn_add_score=document.querySelectorAll("#btn_add_score");
+    btn_add_score.forEach(result=>{
+        const url=result.dataset.url;
+        result.addEventListener("click",function(){
+            Swal.fire({
+                position:"top-right",
+                html:`<iframe src=${url} style="width:100%;height:500px;" frameborder="0"></iframe>`,
+                showConfirmButton:false,
+            });
+        });
+    })
+
+
+    //新增
+    document.getElementById("btn_add").addEventListener("click",function(){
+        console.log("哈哈哈");
+        console.log("{% url "student_create" %}");
+        Swal.fire({
+          position:"top-right",
+          html: `<iframe src='{% url "student_create" %}' width='100%' height='550px' frameborder='0'></iframe>`,
+          showConfirmButton:false,
+        });
+    });
+    //编辑
+    document.querySelectorAll(".editor").forEach(result=>{
+        result.addEventListener("click",function(e){
+            e.preventDefault();//阻止事件发生
+            const url=this.getAttribute("href");
+            Swal.fire({
+                position:"top-right",
+                html:`<iframe src="${url}" width="100%" height="550px" frameborder="0"></iframe>`,
+                showConfirmButton:false,
+            })
+        })
+    });
+    //删除
+    document.querySelectorAll(".delete").forEach(result=>{
+        result.addEventListener("click",function(e){
+            e.preventDefault();
+            const url=this.getAttribute("href");
+            console.log(url);
+            Swal.fire({
+                icon:"warning",
+                title:"是否删除",
+                showCancelButton:true,
+                confirmButtonText:"删除",
+                confirmButtonColor:"red",
+            }).then(result=>{
+                if(result.isConfirmed){
+                    fetch(url,{
+                        //得大写
+                        "method":"DELETE",
+                        "headers":{
+                            "X-Requested-With":"XMLHttpRequest",
+                            //不能用python的{百分号 百分号}方式去设置，因为渲染出来的是input的标签，js不能识别
+                            //得用Django模板语法的方式{大括号 大括号}，这样返回的就是正常的数据
+                            "X-CSRFToken":"{{csrf_token}}",
+                        },
+                    }).then(response=>response.json())
+                    .then(data=>{
+                        if(data.status=="success"){
+                            Swal.fire("SUCCESS",data.message,"success")
+                            .then(result=>{
+                                if(result.isConfirmed){
+                                    window.location.reload()
+                                }
+                            })
+                        }else{
+                            Swal.fire("ERROR",data.message,"error")
+                        }
+                    })
+                }
+            })
+
+        })
+    });
+    //批量删除
+    document.getElementById("btn_delete_all").addEventListener("click",function(){
+        //获取被选择的选择框
+        const checkselect=document.querySelectorAll("input[name='student_ids']:checked");
+        const url="{% url 'student_bulk_delete' %}";
+        if(checkselect.length===0){
+            Swal.fire({
+                icon:"warning",
+                title:"请先选择要删除的数据",
+                confirmButtonText:"好的",
+            });
+            return;
+        }
+        Swal.fire({
+            icon:"warning",
+            title:"是否删除",
+            showCancelButton:true,
+            confirmButtonText:"删除",
+            confirmButtonColor:"red",
+        }).then(result=>{
+            if(result.isConfirmed){
+                //创建一个表单实例对象
+                const formData=new FormData()
+                checkselect.forEach(check=>{
+                    //注意：这里的append不是python的列表append，追加的方式不一样
+                    //python列表的append追加是append(值)
+                    //表单对象的append追加是append(键,值)
+                    formData.append(check.name,check.value)
+                })
+                fetch(url,{
+                    //用post提交批量删除的数据，不能用delete。delete只能处理单个数据，多个数据容易出现问题，造成删除原表的所有数据
+                    method:"POST",
+                    body:formData,
+                    headers:{
+                        "X-Requested-With":"XMLHttpRequest",
+                        "X-CSRFToken":"{{csrf_token}}",
+                    },
+                }).then(response=>response.json())
+                .then(data=>{
+                    if(data.status=="success"){
+                        Swal.fire({
+                            icon:"success",
+                            message:data.message,
+                            confirmButtonText:"好的",
+                        }).then(result=>{
+                            if(result.isConfirmed){
+                                window.location.href="{% url 'student_list' %}"
+                            }
+                        })
+                    }else{
+                        Swal.fire({
+                            icon:"error",
+                            message:data.message,
+                            confirmButtonText:"好的",
+                        }).then(result=>{
+                            if(result.isConfirmed){
+                                window.location.reload()
+                            }
+                        })
+                    }
+                })
+            }
+        }).catch(error=>{
+            Swal.fire({
+                icon:"error",
+                title:"网络请求错误",
+                text:"无法连接到服务器，请稍后再试",
+                confirmButtonText:"关闭",
+            })
+        })
+    })
+    //导入
+    document.getElementById("btn_import").addEventListener("click",function(){
+        Swal.fire({
+          title: "上传学生信息Excel",
+          input: "file",
+          inputAttributes: {
+            "accept": ".xlsx,.xls",
+            "aria-label": "请上传excel文件"
+          },
+          showCancelButton:true,
+          confirmButtonText:"上传",
+          //显示加载动画，并进行preConfirm预处理（异步处理）
+          showLoaderOnConfirm:true,
+          preConfirm:(file)=>{
+            const formData=new FormData();
+            formData.append("excel_file",file);
+            return fetch("{% url 'student_import' %}",{
+                method:"POST",
+                headers:{
+                    "X-Requested-With":"XMLHttpRequest",
+                    "X-CSRFToken":"{{csrf_token}}",
+                },
+                body:formData,
+            })
+            .then(response=>response.json())
+            .then(data=>{
+                if(data.status=="error"){
+                    throw new Error(data.message)
+                }
+            })
+            .catch(error=>{
+                Swal.showValidationMessage(error.message||error)
+            });
+          },
+          allowOutsideClick: () => !Swal.isLoading(),
+        }).then(result=>{
+        console.log(result)
+            if(result.isConfirmed){
+                Swal.fire({
+                    icon:"success",
+                    title:result.message,
+                }).then(result=>{
+                    window.location.reload()
+                })
+            }
+        });
+    })
+    //导出
+    document.getElementById("btn_export").addEventListener("click",function(){
+        const select=document.querySelector("select[name='grade']");
+        const value=select.value;
+        const grade_text=select.options[select.selectedIndex].text;
+        if(!value){
+            Swal.fire({
+                icon:"error",
+                title:"请选择班级",
+                confirmButtonText:"好的",
+            })
+        }else{
+            Swal.fire({
+                icon:"warning",
+                title:"确定导出"+grade_text+"学生信息表",
+                showCancelButton:true,
+                confirmButtonText:"确定",
+                cancelButtonText:"取消",
+            }).then(result=>{
+                if(result.isConfirmed){
+                    fetch("{% url 'student_export' %}",{
+                        method:"POST",
+                        headers:{
+                            "X-Requested-With":"XMLHttpRequest",
+                            "X-CSRFToken":"{{csrf_token}}",
+                            "Content-Type":"application/json",
+                        },
+                        body:JSON.stringify({grade:value})
+                    }).then(response=>{
+                        console.log(response)
+                        //判断服务器是否返回了错误状态码;状态码在 200-299 范围内（表示成功）时为 true，否则为 false。
+                        if(!response.ok){
+                            response.json().then(result=>{
+                                console.log(result)
+                                Swal.fire({
+                                    title:"下载失败",
+                                    text:"服务器错误："+result.message,
+                                    icon:"error",
+                                    confirmButtonText:"关闭",
+                                });
+                            });
+                            throw new Error("网络或服务器错误");
+                        }
+                        //将响应体转换为 Blob 对象（二进制对象，适合文件下载）
+                        return response.blob()
+                    })
+                    .then(blob=>{
+                        //为 Blob 对象创建一个临时的 URL, 创建虚拟地址
+                        //让浏览器以为它正在访问一个真实存在的文件路径，从而触发标准的下载流程。
+                        const url=window.URL.createObjectURL(blob);
+                        const a=document.createElement("a");
+                        a.style.display="none";
+                        a.href=url;
+                        //设置下载文件的默认文件名
+                        a.download=grade_text+".xlsx";
+                        document.body.appendChild(a);
+                        //模拟用户点击这个 <a> 元素，触发浏览器下载文件。
+                        a.click();
+                        //下载触发后，从 DOM 中移除这个临时的 <a> 元素，清理页面。
+                        document.body.removeChild(a);
+                        //释放之前创建的临时 URL 占用的内存。重要：避免内存泄漏，因为临时 URL 在文档卸载时不会自动释放。
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(error=>{
+                        Swal.fire({
+                            title:"错误",
+                            text:"下载出现问题，请稍后再试",
+                            icon:"error",
+                            confirmButtonText:"关闭",
+                        })
+                    })
+                }
+            })
+        }
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load url_tag %}
+{% block content %}
+{% load static %}
+<div class="content">
+    <div class="outside">
+        <div class="inside">
+            <form method="get" action="{% url 'my_score' %}">
+                {% csrf_token %}
+                <span>
+                    <label for="id_name_number">考试名称：</label>
+                    <input id="id_name_number" type="text" placeholder="考试名称..." name="search" class="from search">
+                    <button class="btn search" id="btn_search">搜索</button>
+                </span>
+            </form>
+        </div>
+    </div>
+    <div class="outside">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>考试名称</th>
+                    <th>学生姓名</th>
+                    <th>学号</th>
+                    <th>语文</th>
+                    <th>数学</th>
+                    <th>英语</th>
+                    <th>班级</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for score in scores%}
+                <tr class="{% cycle 'row1' 'row2'%}">
+                    <td>{{score.title}}</td>
+                    <td>{{score.student_name}}</td>
+                    <td>{{score.student_number}}</td>
+                    <td>{{score.chinese_score}}</td>
+                    <td>{{score.math_score}}</td>
+                    <td>{{score.english_score}}</td>
+                    <td>{{score.grade.grade_name}}</td>
+                    <td>
+                        <button id="btn_look" class="btn look" data-url="{% url 'score_look' score.pk %}">查看</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+<!--        分页导航-->
+        <div class="page">
+            <div class="page-a">
+                {% if page_obj.has_previous %}
+                <a href="?{% search_url request page=1 %}">&laquo;首页</a>
+                <a href="?{% search_url request page=page_obj.previous_page_number%}">上一页</a>
+                {% endif %}
+                <span>{{page_obj.number}}/{{page_obj.paginator.num_pages}}</span>
+                {% if page_obj.has_next %}
+                <a href="?{% search_url request page=page_obj.next_page_number %}">下一页</a>
+                <a href="?{% search_url request page=page_obj.paginator.num_pages%}">尾页&raquo;</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+//查看
+const btn_look=document.querySelectorAll("#btn_look");
+btn_look.forEach(result=>{
+    result.addEventListener("click",function(){
+        const url=result.dataset.url;
+        Swal.fire({
+            html:`<iframe src=${url} style="width:100%;height:300px;" frameborder="0"></iframe>`,
+            showConfirmButton:false,
+        })
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+        table{
+            width:400px;
+            border-collapse:collapse;
+            border:1px solid black;
+            text-align:center;
+            margin:10px auto;
+        }
+        table td{
+            border:1px solid black;
+            padding:5px 0px;
+        }
+        .div_print{
+            display:block;
+            width:100%;
+            text-align:center;
+        }
+        .btn.print{
+            border:0px;
+            border-radius:5px;
+            padding:3px 10px;
+            outline:none;
+            color:white;
+            background:blue;
+            margin-top:20px;
+        }
+        @media print {
+            .btn.print {
+                display: none !important;
+            }
+        }
+        .btn.back{
+            border:0px;
+            border-radius:5px;
+            padding:3px 10px;
+            outline:none;
+            color:white;
+            background:red;
+            margin-top:20px;
+            margin-left:20px;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <tr>
+        <td colspan="4">{{scores.title}}成绩单</td>
+    </tr>
+    <tr>
+        <td>{{scores.student_name}}</td><td colspan="2">{{scores.student_number}}</td><td>{{scores.grade}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">语文</td><td colspan="2">{{scores.chinese_score}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">数学</td><td colspan="2">{{scores.math_score}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">英语</td><td colspan="2">{{scores.english_score}}</td>
+    </tr>
+    <tr>
+        <td colspan="1">总分</td><td colspan="3">{{score_sum}}</td>
+    </tr>
+</table>
+<div class="div_print">
+    <button type="button" class="btn print" onclick="page_print()">打印</button>
+    <button type="button" class="btn back" onclick="page_back()">取消</button>
+</div>
+<script>
+    function page_print(){
+        window.print();
+    };
+    function page_back(){
+        window.parent.location.reload();
+    }
+</script>
+</body>
+</html>

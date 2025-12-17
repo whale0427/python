@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load static %}
+    <link href="{% static 'css/base.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sweetalert2.css' %}" rel="stylesheet">
+    <script src="{% static 'js/sweetalert2.js' %}"></script>
+</head>
+<body>
+<div class="content">
+    <div class="outside form" style="width:100%">
+        <div class="form-title">
+            {% if object %}
+                编辑成绩信息
+            {% else %}
+                添加成绩信息
+            {% endif %}
+        </div>
+        {% if object %}
+        <form class="form saveform" method="post" data-url="{% url 'score_update' scores.pk %}">
+        {% else %}
+        <form class="form saveform" method="post" data-url="{% url 'score_create' %}">
+        {% endif %}
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-content">
+                {{field.label_tag}}
+                {{field}}
+            </div>
+            <div class="errors">
+                {{field.errors}}
+            </div>
+            {% endfor %}
+            <div class="operate">
+                <button type="submit" class="btn save">保存</button>
+                {% if not object and ceshi != 1 %}
+                <button type="submit" class="btn save" onclick="save_next()">保存并新增下一个</button>
+                {% endif %}
+                <button type="button" class="btn back" onclick="window.parent.Swal.close();window.parent.location.reload()">取消</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+
+</script>
+<script src="{% static 'js/scores.js' %}"></script>
+</body>
+</html>

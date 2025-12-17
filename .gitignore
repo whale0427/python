@@ -1,0 +1,58 @@
+# ====================== 1. 虚拟环境相关（必加） ======================
+# 虚拟环境的文件夹名，根据你自己的虚拟环境名称调整（常见的是venv、env、.venv）
+#venv/
+#env/
+.venv/
+# Windows的虚拟环境可能会有这个文件夹
+#ENV/
+
+# ====================== 2. Python编译文件（必加） ======================
+# Python运行时生成的缓存文件，后缀是.pyc、.pyo等，没用且占空间
+__pycache__/
+*.py[cod]
+*$py.class
+# 编译后的扩展文件
+*.so
+# Python安装包相关的冗余文件
+.Python
+build/
+develop-eggs/
+dist/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+*.egg
+
+# ====================== 3. Django项目相关（必加） ======================
+# SQLite3数据库文件（本地测试用，不要上传）
+*.db
+*.sqlite3
+*.sqlite3-journal
+# 执行python manage.py collectstatic后生成的静态文件目录
+#static/
+# 用户上传的媒体文件（比如图片、视频，本地测试用）
+media/
+# 本地配置文件（如果你把敏感配置放在local_settings.py，而不是settings.py）
+local_settings.py
+# Django的日志文件
+*.log
+# 环境变量文件（比如存放SECRET_KEY、数据库密码的.env文件）
+.env
+.env.local
+.env.*.local
+
+# ====================== 4. IDE/编辑器配置文件（可选，建议加） ======================
+# PyCharm的配置文件夹
+.idea/
+# VSCode的配置文件夹
+.vscode/
+# Vim编辑器的临时文件
+*.swp
+*.swo
+# Mac系统的隐藏文件（Windows没有，可忽略）
+.DS_Store
