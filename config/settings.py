@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+#加载.env文件
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,19 +24,27 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9up!s@$3bgs&*l#u9(d=p4n)pd=xdi+brflev^@o^isti8$ql2'
+# SECRET_KEY = 'django-insecure-9up!s@$3bgs&*l#u9(d=p4n)pd=xdi+brflev^@o^isti8$ql2'
+SECRET_KEY=os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 #***如果协议是https那么就需要设置ALLOWED_HOSTS、CSRF_TRUSTED_ORIGINS、SESSION_COOKIE_SECURE
-ALLOWED_HOSTS = ['www.u19894.nyat.app','0.0.0.0','127.0.0.1','localhost',]
-#CSRF信任源：必须包含【协议+域名+端口】的完整地址
-CSRF_TRUSTED_ORIGINS = [
-    'https://www.u19894.nyat.app:14191',  # 新增：带端口的HTTPS地址（核心修复）
-]
-SESSION_COOKIE_SECURE = True
+# ALLOWED_HOSTS = ['www.u19894.nyat.app','0.0.0.0','127.0.0.1','localhost',]
+ALLOWED_HOSTS=os.getenv("ALLOWED_HOSTS","").split(",")
+if ALLOWED_HOSTS==[""]:
+    ALLOWED_HOSTS=[]
 
+#CSRF信任源：必须包含【协议+域名+端口】的完整地址
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://www.u19894.nyat.app:14191',  # 新增：带端口的HTTPS地址（核心修复）
+# ]
+CSRF_TRUSTED_ORIGINS=os.getenv("CSRF_TRUSTED_ORIGINS","").split(",")
+if CSRF_TRUSTED_ORIGINS==[""]:
+    CSRF_TRUSTED_ORIGINS=[]
+# SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE")=="True"
 
 # Application definition
 
